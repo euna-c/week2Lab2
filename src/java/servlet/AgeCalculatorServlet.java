@@ -15,30 +15,50 @@ public class AgeCalculatorServlet extends HttpServlet {
                 .forward(request, response);
     }
 
-     @Override
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
- 
+       
+         try{
         String age = request.getParameter("age");
         int ageNext = Integer.parseInt(age);
         int finalAge = ageNext+1;
-        String correctMsg = "your age next year will be ";
-        String wrongMsg = "You must type your age.";
+        
+        
+        String nullError= "You must type your age.";
+        String msg;
+        String correctRe = "Your age next year is "+finalAge;
         
         log(age);
         
         request.setAttribute("age", age);
-        request.setAttribute("correctMsg", correctMsg);
+        request.setAttribute("ageNext", ageNext);
+        request.setAttribute("nullError", nullError);
         request.setAttribute("finalAge", finalAge);
         
+        request.setAttribute("msg", correctRe);
        
-        if (age == null || age.equals("")) {
+        getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp")
+                    .forward(request, response);
+       
+        if (age == null || age.equals("")) 
+        {
+            String error = "You must type your current age";
+            request.setAttribute("msg", error);
+            
             getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp")
                     .forward(request, response);
             return;
         }
        
-        getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp").forward(request, response);
         
+        }
+         catch(NumberFormatException e)
+        {
+            String numberError = "Please, type number";
+            request.setAttribute("msg", numberError);
+            getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp").forward(request, response);
+            e.getMessage();
+        }
     }
 }
